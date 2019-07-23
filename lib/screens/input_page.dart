@@ -1,11 +1,14 @@
+import 'package:bmi_calculator/calculator_brain.dart';
+import 'package:bmi_calculator/components/bottom_button.dart';
+import 'package:bmi_calculator/components/height_value.dart';
+import 'package:bmi_calculator/components/icon_content.dart';
+import 'package:bmi_calculator/components/reusable_card.dart';
+import 'package:bmi_calculator/components/round_icon_button.dart';
+import 'package:bmi_calculator/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 
-import 'constants.dart';
-import 'icon_content.dart';
-import 'reusable_card.dart';
-import 'round_icon_button.dart';
+import 'result_page.dart';
 
 enum Gender {
   male,
@@ -13,6 +16,7 @@ enum Gender {
 }
 
 class InputPage extends StatefulWidget {
+  static const routeName = '/';
   @override
   _InputPageState createState() => _InputPageState();
 }
@@ -20,9 +24,8 @@ class InputPage extends StatefulWidget {
 class _InputPageState extends State<InputPage> {
   Color maleCardColor = kInActiveCardColor;
   Color femaleCardColor = kInActiveCardColor;
-  double height = 4.5;
-  var f = new NumberFormat("#.0#", "en_US");
-  int weight = 40;
+  double height = 181;
+  int weight = 70;
   int age = 19;
 
   Gender selectedGender;
@@ -86,18 +89,8 @@ class _InputPageState extends State<InputPage> {
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
                     children: <Widget>[
-                      Text(
-//                        TODO proper height ft format
-                        f.format(height),
-                        style: kBoldText,
-                      ),
-                      Text(
-                        'ft',
-                        style: kGreyText,
-                      ),
+                      HeightValue(height: height),
                     ],
                   ),
                   SliderTheme(
@@ -211,11 +204,20 @@ class _InputPageState extends State<InputPage> {
               ],
             ),
           ),
-          Container(
-            color: kBottomContainerColor,
-            width: double.infinity,
-            height: kBottomContainerHeight,
-            margin: EdgeInsets.only(top: 10.0),
+          BottomButton(
+            text: 'CALCULATE',
+            onTap: () {
+              CalculatorBrain calc =
+                  CalculatorBrain(height: height, weight: weight);
+              print(
+                  'bmi: ${calc.calculateBMI()}, bmiResult: ${calc.getBMIValueAndRecommendation()[0]}');
+              Navigator.pushNamed(context, ResultPage.routeName,
+                  arguments: ResultPageArguments(
+                    bmi: calc.calculateBMI(),
+                    bmiResult: calc.getBMIValueAndRecommendation()[0],
+                    recommendation: calc.getBMIValueAndRecommendation()[1],
+                  ));
+            },
           ),
         ],
       ),
